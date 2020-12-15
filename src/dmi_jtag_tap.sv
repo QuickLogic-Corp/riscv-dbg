@@ -80,6 +80,21 @@ module dmi_jtag_tap #(
     logic [9:4]   abits;
     logic [3:0]   version;
   } dtmcs_t;
+  
+  //---------------------
+  // TMS reset logic
+  //---------------------
+  logic tms_reset;
+  logic tms_q1, tms_q2, tms_q3, tms_q4;
+  
+  always @ (posedge tck_i) begin
+    tms_q1 <=  tms_i;
+    tms_q2 <=  tms_q1;
+    tms_q3 <=  tms_q2;
+    tms_q4 <=  tms_q3;
+  end
+
+  assign tms_reset = tms_q1 & tms_q2 & tms_q3 & tms_q4 & tms_i;    // 5 consecutive TMS=1 causes reset
 
   // ----------------
   // IR logic
@@ -119,6 +134,9 @@ module dmi_jtag_tap #(
 
   always_ff @(posedge tck_i, negedge trst_ni) begin : p_jtag_ir_reg
     if (!trst_ni) begin
+      jtag_ir_shift_q <= '0;
+      jtag_ir_q       <= IDCODE;
+    else if (tms_reset) begin
       jtag_ir_shift_q <= '0;
       jtag_ir_q       <= IDCODE;
     end else begin
@@ -235,6 +253,9 @@ module dmi_jtag_tap #(
     if (!trst_ni) begin
       td_o     <= 1'b0;
       tdo_oe_o <= 1'b0;
+    else if (tms_reset) begin
+      td_o     <= 1'b0;
+      tdo_oe_o <= 1'b0;
     end else begin
       td_o     <= tdo_mux;
       tdo_oe_o <= (shift_ir | shift_dr_o);
@@ -334,6 +355,11 @@ module dmi_jtag_tap #(
 
   always_ff @(posedge tck_i or negedge trst_ni) begin : p_regs
     if (!trst_ni) begin
+      tap_state_q <= RunTestIdle;
+      idcode_q    <= IdcodeValue;
+      bypass_q    <= 1'b0;
+      dtmcs_q     <= '0;
+    else if (tms_reset) begin
       tap_state_q <= RunTestIdle;
       idcode_q    <= IdcodeValue;
       bypass_q    <= 1'b0;

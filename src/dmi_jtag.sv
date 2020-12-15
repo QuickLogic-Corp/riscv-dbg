@@ -90,6 +90,21 @@ module dmi_jtag #(
 
   logic error_dmi_busy;
   dmi_error_e error_d, error_q;
+  
+  //---------------------
+  // TMS reset logic
+  //---------------------
+  logic tms_reset;
+  logic tms_q1, tms_q2, tms_q3, tms_q4;
+  
+  always @ (posedge tck_i) begin
+    tms_q1 <=  tms_i;
+    tms_q2 <=  tms_q1;
+    tms_q3 <=  tms_q2;
+    tms_q4 <=  tms_q3;
+  end
+
+  assign tms_reset = tms_q1 & tms_q2 & tms_q3 & tms_q4 & tms_i;    // 5 consecutive TMS=1 causes reset
 
   always_comb begin : p_fsm
     error_dmi_busy = 1'b0;
@@ -200,6 +215,12 @@ module dmi_jtag #(
 
   always_ff @(posedge tck_i or negedge trst_ni) begin : p_regs
     if (!trst_ni) begin
+      dr_q      <= '0;
+      state_q   <= Idle;
+      address_q <= '0;
+      data_q    <= '0;
+      error_q   <= DMINoError;
+    else if (tms_reset) begin
       dr_q      <= '0;
       state_q   <= Idle;
       address_q <= '0;
