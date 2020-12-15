@@ -37,8 +37,11 @@ module dmi_jtag #(
   input  logic         trst_ni,  // JTAG test reset pad
   input  logic         td_i,     // JTAG test data input pad
   output logic         td_o,     // JTAG test data output pad
-  output logic         tdo_oe_o  // Data out output enable
+  output logic         tdo_oe_o,  // Data out output enable
+  output logic [2:0]   debug_o    //EXP
 );
+  assign debug_o = state_q;
+  
   assign       dmi_rst_no = rst_ni;
 
   logic        test_logic_reset;
