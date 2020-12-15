@@ -136,7 +136,7 @@ module dmi_jtag_tap #(
     if (!trst_ni) begin
       jtag_ir_shift_q <= '0;
       jtag_ir_q       <= IDCODE;
-    else if (tms_reset) begin
+    end else if (tms_reset) begin
       jtag_ir_shift_q <= '0;
       jtag_ir_q       <= IDCODE;
     end else begin
@@ -253,7 +253,7 @@ module dmi_jtag_tap #(
     if (!trst_ni) begin
       td_o     <= 1'b0;
       tdo_oe_o <= 1'b0;
-    else if (tms_reset) begin
+    end else if (tms_reset) begin
       td_o     <= 1'b0;
       tdo_oe_o <= 1'b0;
     end else begin
@@ -359,7 +359,7 @@ module dmi_jtag_tap #(
       idcode_q    <= IdcodeValue;
       bypass_q    <= 1'b0;
       dtmcs_q     <= '0;
-    else if (tms_reset) begin
+    end else if (tms_reset) begin
       tap_state_q <= RunTestIdle;
       idcode_q    <= IdcodeValue;
       bypass_q    <= 1'b0;
