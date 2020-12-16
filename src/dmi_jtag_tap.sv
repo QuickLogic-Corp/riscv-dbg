@@ -352,7 +352,7 @@ module dmi_jtag_tap #(
           idcode_q    <= IdcodeValue;
           bypass_q    <= 1'b0;
           dtmcs_q     <= '0;
-      end elseif (tms_reset) begin
+      end else if (tms_reset) begin
           tap_state_q <= RunTestIdle;
           idcode_q    <= IdcodeValue;
           bypass_q    <= 1'b0;

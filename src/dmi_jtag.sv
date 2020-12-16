@@ -218,7 +218,7 @@ module dmi_jtag #(
             address_q <= '0;
             data_q    <= '0;
             error_q   <= DMINoError;
-        end if (tms_reset) begin
+        end else if (tms_reset) begin
             dr_q      <= '0;
             state_q   <= Idle;
             address_q <= '0;
